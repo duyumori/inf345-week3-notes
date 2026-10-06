@@ -14,7 +14,7 @@ def client():
 
 def test_root_answers(client):
     r = client.get("/")
-    assert r.status_code == 201
+    assert r.status_code == 200
     assert r.json()["service"] == "notes"
 
 
