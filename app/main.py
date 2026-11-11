@@ -1,5 +1,6 @@
 """A small notes API. Notes are kept in memory."""
 
+import os
 import threading
 
 from fastapi import FastAPI, HTTPException, Response
@@ -52,10 +53,19 @@ class NoteStore:
 def create_app():
     app = FastAPI(title="Notes service")
     store = NoteStore()
+    greeting = os.environ.get("GREETING", "hello")
+
+    api_key = os.environ.get("API_KEY", "")
+
 
     @app.get("/")
     def root():
-        return {"service": "notes", "docs": "/docs"}
+        return {
+            "service": "notes",
+            "docs": "/docs",
+            "greeting": greeting,
+            "configured": bool(api_key),
+        }
 
     @app.get("/healthz")
     def healthz():
