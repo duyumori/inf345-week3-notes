@@ -1,0 +1,33 @@
+---
+# Week 11 lab: prepare a machine to run my service. Run it twice:
+#   ansible-playbook -i ansible/inventory.ini ansible/site.yml
+# The second run must say changed=0.
+- name: Prepare a machine for my service
+  hosts: app_servers                  # BLANK 1 - the group name in inventory.ini (without brackets)
+  gather_facts: true
+  vars:
+    app_dir: "{{ ansible_facts.env.HOME }}/inf345-app"
+    app_port: 8080
+
+  tasks:
+    - name: The app directory exists
+      ansible.builtin.file:      # BLANK 2 - the module that manages files AND directories
+        path: "{{ app_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: The config file sets the port
+      ansible.builtin.copy:
+        dest: "{{ app_dir }}/app.env"
+        content: |
+          PORT={{ app_port }}
+        mode: "0644"
+      notify: Restart the app               # BLANK 3 - the exact name of the handler below
+
+  handlers:
+    # At work: ansible.builtin.systemd with state: restarted. Here it only
+    # writes one line per restart, so you can count the restarts.
+    - name: Restart the app
+      ansible.builtin.shell:
+        cmd: date >> "{{ app_dir }}/restarts.log"
+      changed_when: true
