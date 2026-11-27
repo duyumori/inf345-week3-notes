@@ -6,3 +6,9 @@ venv/
 .DS_Store
 .idea/
 .vscode/
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+*.tfplan
+crash.log
